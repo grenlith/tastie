@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+
+FROM python:3.14-slim AS builder
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+COPY . .
+RUN uv sync --frozen --no-dev
+FROM python:3.14-slim AS runtime
+
+RUN useradd --create-home --shell /bin/bash tastie
+WORKDIR /app
+COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /app /app
+RUN mkdir -p /app/data
+RUN chown -R tastie:tastie /app
+USER tastie
+ENV PATH="/app/.venv/bin:$PATH"
+ENV ENVIRONMENT=production
+ENV TASTIE_TRUST_PROXY=true
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/login')" || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]

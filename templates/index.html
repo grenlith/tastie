@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }}{% if current_tag %} - {{ current_tag }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <h2>tags</h2>
+        {% if current_tag %}
+        <a href="{% if profile_user %}/users/{{ profile_user.username }}{% elif my_bookmarks %}/my{% else %}/{% endif %}" class="tag-clear">clear filter</a>
+        {% endif %}
+        <ul class="tag-list">
+            {% for tag, count in all_tags %}
+            <li>
+                <a href="{% if profile_user %}/users/{{ profile_user.username }}{% elif my_bookmarks %}/my{% endif %}/?tag={{ tag }}"
+                   class="tag{% if tag == current_tag %} active{% endif %}">
+                    {{ tag }} <span class="count">({{ count }})</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <section class="bookmarks">
+        {% if not user %}
+        <div class="announcement">
+            <p><strong>{{ site_name }}</strong> is a personal and optionally social bookmark repository, inspired by early <a href="https://en.wikipedia.org/wiki/Delicious_(website)">del.icio.us</a>.</p>
+            <p>save links, organize them with tags, and choose what to share publicly or with other registered users.</p>
+        </div>
+        {% endif %}
+
+        {% if search_query %}
+        <p class="search-info">
+            search results for "{{ search_query }}"
+            <a href="{% if profile_user %}/users/{{ profile_user.username }}{% elif my_bookmarks %}/my{% else %}/{% endif %}">clear</a>
+        </p>
+        {% endif %}
+
+        {% if profile_user and not my_bookmarks %}
+        <h2>{{ profile_user.username }}'s bookmarks</h2>
+        {% elif my_bookmarks %}
+        <div class="my-bookmarks-header">
+            <h2>my bookmarks</h2>
+            <div class="import-export">
+                <a href="/my/export" class="btn btn-small">export</a>
+                <form action="/my/import" method="post" enctype="multipart/form-data" class="import-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <label class="btn btn-small">
+                        import
+                        <input type="file" name="file" accept=".html,.htm" data-auto-submit hidden>
+                    </label>
+                </form>
+            </div>
+        </div>
+        {% if imported_count is not none %}
+        <p class="import-result">imported {{ imported_count }} bookmark{{ 's' if imported_count != 1 else '' }}.</p>
+        {% endif %}
+        {% endif %}
+
+        {% if bookmarks %}
+        <ul class="bookmark-list" id="bookmark-list">
+            {% for bookmark in bookmarks %}
+            {% include "partials/bookmark_item.html" %}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty">
+            {% if search_query %}
+            no bookmarks match your search.
+            {% elif current_tag %}
+            no bookmarks with tag "{{ current_tag }}".
+            {% elif my_bookmarks %}
+            you don't have any bookmarks yet. <a href="/add">add one!</a>
+            {% else %}
+            no public bookmarks yet.
+            {% endif %}
+        </p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

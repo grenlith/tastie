@@ -1,0 +1,60 @@
+# docker compose for tastie with caddy
+
+services:
+  tastie:
+    build: .
+    container_name: tastie
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
+      - TASTIE_SECRET_KEY=${TASTIE_SECRET_KEY:?TASTIE_SECRET_KEY is required}
+      - TASTIE_TRUST_PROXY=true
+      - TASTIE_REQUIRE_INVITE_CODE=${TASTIE_REQUIRE_INVITE_CODE:-false}
+      - TASTIE_LOG_LEVEL=${TASTIE_LOG_LEVEL:-INFO}
+      - TASTIE_DATABASE_PATH=/app/data/tastie.db
+      - TASTIE_SITE_NAME=${TASTIE_SITE_NAME:-tast.ie}
+    volumes:
+      # Persist database
+      - tastie_data:/app/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/login')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - tastie_network
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: tastie_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    environment:
+      - TASTIE_DOMAIN=${TASTIE_SITE_NAME:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      tastie:
+        condition: service_healthy
+    networks:
+      - tastie_network
+
+volumes:
+  tastie_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+
+networks:
+  tastie_network:
+    driver: bridge

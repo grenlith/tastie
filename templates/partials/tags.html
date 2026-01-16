@@ -1,0 +1,9 @@
+<ul class="tag-list">
+    {% for tag, count in all_tags %}
+    <li>
+        <a href="/?tag={{ tag }}" class="tag">
+            {{ tag }} <span class="count">({{ count }})</span>
+        </a>
+    </li>
+    {% endfor %}
+</ul>

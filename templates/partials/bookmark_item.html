@@ -1,0 +1,48 @@
+<li class="bookmark-item" id="bookmark-{{ bookmark.id }}">
+    <div class="bookmark-header">
+        <a href="{{ bookmark.url }}" class="bookmark-title" target="_blank" rel="noopener">
+            {{ bookmark.title }}
+        </a>
+        {% if bookmark.visibility == 'private' %}
+        <span class="visibility-badge private">only you</span>
+        {% elif bookmark.visibility == 'authenticated' %}
+        <span class="visibility-badge authenticated">registered users</span>
+        {% endif %}
+        <span class="bookmark-url">{{ bookmark.url[:50] }}{% if bookmark.url|length > 50 %}...{% endif %}</span>
+    </div>
+
+    {% if bookmark.description %}
+    <p class="bookmark-description">{{ bookmark.description }}</p>
+    {% endif %}
+
+    <div class="bookmark-meta">
+        <div class="bookmark-tags">
+            {% for tag in bookmark.tag_list() %}
+            <a href="{% if profile_user %}/users/{{ profile_user.username }}{% elif my_bookmarks %}/my{% endif %}/?tag={{ tag }}" class="tag">{{ tag }}</a>
+            {% endfor %}
+        </div>
+        {% if user and user.id == bookmark.user_id %}
+        <div class="bookmark-actions">
+            <a href="/bookmarks/{{ bookmark.id }}/edit" class="action">edit</a>
+            <button class="action delete"
+                    hx-delete="/bookmarks/{{ bookmark.id }}"
+                    hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'
+                    hx-target="#bookmark-{{ bookmark.id }}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Delete this bookmark?">delete</button>
+        </div>
+        {% elif user and user.id != bookmark.user_id %}
+        <div class="bookmark-actions" id="save-action-{{ bookmark.id }}">
+            {% set already_saved = saved_urls is defined and bookmark.url in saved_urls %}
+            {% include "partials/save_button.html" %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="bookmark-footer">
+        {% if show_authors %}
+        <span class="bookmark-author">by <a href="/users/{{ bookmark.user.username }}">{{ bookmark.user.username }}</a></span>
+        {% endif %}
+        <time class="bookmark-date">{{ bookmark.created_at.strftime('%Y-%m-%d') }}</time>
+    </div>
+</li>

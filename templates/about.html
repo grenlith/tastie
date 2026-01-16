@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}about - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="static-page">
+    <h2>about {{ site_name }}</h2>
+    <p>
+        tast.ie is a personal and optionally social bookmark repository inspired by early
+        <a href="https://en.wikipedia.org/wiki/Delicious_(website)" target="_blank" rel="noopener">del.icio.us</a>.
+        it's a simple way to save, organize, and share links that matter to you or your community.
+    </p>
+
+    <p>
+        this application was written in large part because <a href="https://nop.codes" target="_blank" rel="noopener">i</a>
+        had a few discussions about a real need for social/community bookmarks in current_year. it's self-hostable if you want, and easy to 
+        deploy because communities need to be able to easily spin up infrastructure that isn't owned by a company with financial incentives.
+    </p>
+
+    <h3>features</h3>
+    <ul>
+        <li><strong>tagging</strong> &ndash; organize bookmarks with space-separated tags</li>
+        <li><strong>full-text search</strong> &ndash; find what you're looking for in tags, titles, or descriptions</li>
+        <li><strong>visibility controls</strong> &ndash; keep bookmarks public, visible to registered users only, or private</li>
+    </ul>
+
+    <h3>open source</h3>
+    <p>
+        tast.ie is open source software. you can view the code, report issues, or contribute on
+        <a href="https://github.com/grenlith/tastie" target="_blank" rel="noopener">github</a>.
+    </p>
+
+    <h4>special thanks</h4>
+    <p>
+        shane in ireland for graciously owning the domain for the reference implementation.
+    </p>
+    </div>
+{% endblock %}

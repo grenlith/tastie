@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{% if bookmark %}edit{% else %}add{% endif %} bookmark - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{% if bookmark %}edit bookmark{% else %}add bookmark{% endif %}</h2>
+
+    {% if error %}
+    <div class="errors">
+        <p class="error">{{ error }}</p>
+    </div>
+    {% endif %}
+
+    <form method="post"
+          action="{% if bookmark %}/bookmarks/{{ bookmark.id }}{% else %}/bookmarks{% endif %}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="form-group">
+            <label for="url">url</label>
+            <input type="url" id="url" name="url" required maxlength="2048"
+                   value="{{ form_data.url if form_data else (bookmark.url if bookmark else '') }}"
+                   placeholder="gemini://example.org">
+        </div>
+
+        <div class="form-group">
+            <label for="title">title</label>
+            <input type="text" id="title" name="title" required maxlength="500"
+                   value="{{ form_data.title if form_data else (bookmark.title if bookmark else '') }}"
+                   placeholder="bookmark title">
+        </div>
+
+        <div class="form-group">
+            <label for="description">description</label>
+            <textarea id="description" name="description" rows="3" maxlength="5000"
+                      placeholder="description also used for full text search">
+                      {{ form_data.description if form_data else (bookmark.description if bookmark else '') }}
+            </textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">tags <span class="hint">(space-separated)</span></label>
+            <input type="text" id="tags" name="tags" maxlength="500"
+                   value="{{ form_data.tags if form_data else (bookmark.tags if bookmark else '') }}"
+                   placeholder="smallweb directory tagging">
+        </div>
+
+        <div class="form-group">
+            <label>visibility</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="visibility" value="public"
+                           {% if form_data %}
+                               {% if form_data.visibility == 'public' %}checked{% endif %}
+                           {% elif bookmark %}
+                               {% if bookmark.visibility == 'public' %}checked{% endif %}
+                           {% else %}
+                               checked
+                           {% endif %}>
+                    <span>public</span>
+                    <span class="hint">visible to everyone</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="visibility" value="authenticated"
+                           {% if form_data %}
+                               {% if form_data.visibility == 'authenticated' %}checked{% endif %}
+                           {% elif bookmark %}
+                               {% if bookmark.visibility == 'authenticated' %}checked{% endif %}
+                           {% endif %}>
+                    <span>registered users only</span>
+                    <span class="hint">visible to logged-in users</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="visibility" value="private"
+                           {% if form_data %}
+                               {% if form_data.visibility == 'private' %}checked{% endif %}
+                           {% elif bookmark %}
+                               {% if bookmark.visibility == 'private' %}checked{% endif %}
+                           {% endif %}>
+                    <span>private</span>
+                    <span class="hint">visible only to you</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">
+                {% if bookmark %}save changes{% else %}add bookmark{% endif %}
+            </button>
+            <a href="/my" class="btn">cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

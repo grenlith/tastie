@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}register - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>create account</h2>
+
+    {% if errors %}
+    <div class="errors">
+        {% for error in errors %}
+        <p class="error">{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" action="/register">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        {% if require_invite_code %}
+        <div class="form-group">
+            <label for="invite_code">invite code</label>
+            <input type="text" id="invite_code" name="invite_code" required
+                   value="{{ invite_code }}" autocomplete="off"
+                   placeholder="TASTIE-XXXXXXX">
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="username">username</label>
+            <input type="text" id="username" name="username" required
+                   value="{{ username }}" autocomplete="username"
+                   minlength="3" maxlength="30">
+        </div>
+
+        <div class="form-group">
+            <label for="email">email</label>
+            <input type="email" id="email" name="email" required
+                   value="{{ email }}" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+            <label for="password">password</label>
+            <input type="password" id="password" name="password" required
+                   autocomplete="new-password" minlength="12">
+        </div>
+
+        <div class="form-group">
+            <label for="password_confirm">confirm password</label>
+            <input type="password" id="password_confirm" name="password_confirm" required
+                   autocomplete="new-password">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">register</button>
+        </div>
+    </form>
+
+    <p class="auth-link">already have an account? <a href="/login">log in</a></p>
+</div>
+{% endblock %}

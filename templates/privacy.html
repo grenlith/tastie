@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}privacy - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="static-page">
+    <h2>privacy</h2>
+
+    <p>
+        tast.ie is designed with simplicity and privacy in mind.
+        here's what you should know about how your data is handled.
+    </p>
+
+    <h3>what is saved</h3>
+    <ul>
+        <li><strong>account info</strong> &ndash; username, email, and a securely hashed password</li>
+        <li><strong>bookmarks</strong> &ndash; URIs, titles, descriptions, and tags you save</li>
+        <li><strong>timestamps</strong> &ndash; when bookmarks are created or updated</li>
+    </ul>
+
+    <h3>visibility controls</h3>
+    <p>
+        you control who sees your bookmarks. each bookmark can be set to:
+    </p>
+    <ul>
+        <li><strong>public</strong> &ndash; visible to everyone</li>
+        <li><strong>registered</strong> &ndash; visible only to logged-in users</li>
+        <li><strong>private</strong> &ndash; visible only to you</li>
+    </ul>
+
+    <h3>data storage</h3>
+    <p>
+        all data is stored locally on the server running this instance.
+    </p>
+    </div>
+{% endblock %}

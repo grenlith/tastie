@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}login - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>log in</h2>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="/login">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="form-group">
+            <label for="username">username or email</label>
+            <input type="text" id="username" name="username" required
+                   value="{{ username }}" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+            <label for="password">password</label>
+            <input type="password" id="password" name="password" required
+                   autocomplete="current-password">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">log in</button>
+        </div>
+    </form>
+
+    <p class="auth-link">don't have an account? <a href="/register">register</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+# Caddyfile for tast.ie reverse proxy
+#
+# caddy automatically obtains and renews tls certificates via let's encrypt
+# not intended for use in development/testing
+#
+# {$TASTIE_SITE_NAME} is set via .env configuration
+
+{$TASTIE_SITE_NAME:localhost} {
+    # Reverse proxy to tastie application
+    reverse_proxy tastie:8000 {
+        # Pass original client information
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+
+        # Health checks
+        health_uri /login
+        health_interval 30s
+        health_timeout 5s
+    }
+
+    header {
+        -Server
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    log {
+        output stdout
+        format console
+        level INFO
+    }
+
+    encode gzip zstd
+}

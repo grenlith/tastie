@@ -1,0 +1,11 @@
+{% if just_saved %}
+<span class="action saved">saved!</span>
+{% elif already_saved %}
+<span class="action saved" title="You already have this URL bookmarked">already saved</span>
+{% else %}
+<button class="action"
+        hx-post="/bookmarks/{{ bookmark.id }}/save"
+        hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'
+        hx-target="#save-action-{{ bookmark.id }}"
+        hx-swap="innerHTML">save</button>
+{% endif %}

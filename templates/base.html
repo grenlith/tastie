@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_name }}{% endblock %}</title>
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/static/style.min.css">
+    <script src="/static/htmx.min.js"></script>
+    <script src="/static/theme.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1><a href="/"><img src="/static/logo.png" alt="" class="site-logo">{{ site_name }}</a></h1>
+        <nav>
+            <form action="{% if my_bookmarks %}/my/search{% else %}/search{% endif %}" method="get" class="search-form">
+                <input type="search" name="q" placeholder="search bookmarks..."
+                       value="{{ search_query or '' }}">
+                <button type="submit" class="btn">search</button>
+            </form>
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-sun">&#9788;</span>
+                <span class="icon-moon">&#9790;</span>
+            </button>
+            {% if user %}
+            <a href="/my" class="btn{% if my_bookmarks %} active{% endif %}">my bookmarks</a>
+            <a href="/add" class="btn">+ add</a>
+            <span class="user-info">{{ user.username }}</span>
+            <form action="/logout" method="post" class="logout-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn-link">logout</button>
+            </form>
+            {% else %}
+            <a href="/login" class="btn">log in</a>
+            <a href="/register" class="btn">register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <nav class="footer-links">
+            <a href="/about">about</a>
+            <a href="https://github.com/grenlith/tastie" target="_blank" rel="noopener">code</a>
+            <a href="/privacy">privacy</a>
+        </nav>
+        <span class="footer-copyright">&copy; {{ now.year }} {{ site_name }}</span>
+    </footer>
+</body>
+</html>

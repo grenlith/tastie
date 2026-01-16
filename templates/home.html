@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }}{% endblock %}
+
+{% block content %}
+{% if not user %}
+<div class="announcement">
+    <p><strong>{{ site_name }}</strong> is a personal and optionally social bookmark repository, inspired by early <a href="https://en.wikipedia.org/wiki/Delicious_(website)">del.icio.us</a>.</p>
+    <p>save links, organize them with tags, and choose what to share publicly or with other registered users.</p>
+</div>
+{% endif %}
+
+<div class="home-layout">
+    <section class="home-left">
+        <h2>popular bookmarks by tag</h2>
+        {% for tag_data in top_tags_with_bookmarks %}
+        <div class="tag-section">
+            <h3><a href="/?tag={{ tag_data.tag }}">{{ tag_data.tag }}</a> <span class="tag-count">({{ tag_data.count }})</span></h3>
+            {% if tag_data.bookmarks %}
+            <ul class="compact-bookmark-list">
+                {% for bookmark, user_count in tag_data.bookmarks %}
+                <li>
+                    <a href="{{ bookmark.url }}" class="compact-bookmark-link" target="_blank" rel="noopener">{{ bookmark.title }}</a>
+                    <span class="save-count">{{ user_count }} save{% if user_count != 1 %}s{% endif %}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-tag">no bookmarks</p>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="empty">no tags yet</p>
+        {% endfor %}
+    </section>
+
+    <section class="home-right">
+        <h2>recent bookmarks</h2>
+        {% if recent_bookmarks %}
+        <ul class="bookmark-list">
+            {% for bookmark in recent_bookmarks %}
+            {% include "partials/bookmark_item.html" %}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty">no bookmarks yet</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

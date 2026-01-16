@@ -1,0 +1,23 @@
+{% if bookmarks %}
+<ul class="bookmark-list" id="bookmark-list">
+    {% for bookmark in bookmarks %}
+    {% include "partials/bookmark_item.html" %}
+    {% endfor %}
+</ul>
+{% if has_more and next_cursor %}
+<div id="load-more-container">
+    <button
+        class="btn load-more-btn"
+        hx-get="{{ '/my/bookmarks' if my_bookmarks else '/bookmarks' }}?cursor={{ next_cursor }}{% if current_tag %}&tag={{ current_tag }}{% endif %}"
+        hx-target="#bookmark-list"
+        hx-swap="beforeend"
+        hx-select="ul.bookmark-list > li"
+        hx-select-oob="#load-more-container"
+    >
+        load more
+    </button>
+</div>
+{% endif %}
+{% else %}
+<p class="empty">no bookmarks found.</p>
+{% endif %}
